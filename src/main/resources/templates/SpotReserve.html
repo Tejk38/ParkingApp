@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserve a Spot</title>
+    <style>
+
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #556B2F;
+            min-height: 100vh;
+            overflow-x: auto;
+            background: linear-gradient(to bottom, #e0f3ff, #a8d4ff);
+            background: linear-gradient(to bottom, #a67c00, #4040bf);
+
+
+
+        }
+
+        header {
+            /*background-color: #260d4b;*/
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to top, #a67c00, #4040bf);
+            background: linear-gradient(to bottom, #e0f3ff, #a8d4ff);
+
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            height: 20px;
+            flex-grow: 1;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        nav li {
+            display: inline-block;
+
+            margin-right: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            font-size: 16px;
+            color: #333;
+        }
+
+        main {
+            position: relative;
+
+            left: 60px;
+            display: none;
+            padding: 20px;
+
+            width: calc(100% - 40px);
+
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+        }
+
+
+        .timing-wrapper {
+
+
+            position: relative;
+
+            width: 99%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            overflow-x: auto;
+            white-space: nowrap;
+
+            background-color: cornflowerblue;
+            padding: 10px;
+            margin-right: 10px;
+
+
+
+        }
+        .timing-container {
+            /*display: none;*/
+            position: relative;
+
+            display: flex;
+            justify-content: center;
+        }
+
+        .timing-container button {
+            display:inline-block;
+            padding:5px 10px;
+            border:0.1em solid #6e1414;
+            margin:0 0.9em 0.9em 0;
+            border-radius:0.12em;
+
+            text-decoration:none;
+            font-family:'Roboto',sans-serif;
+            font-weight:300;
+            width: 150px;
+            height: 30px;
+            font-size: 1rem;
+            color:#000;
+            text-align:center;
+            transition: all 0.2s;
+        }
+
+        .timing-container button:hover {
+            color:#000000;
+            background-color:hsl(30, 18%, 87%);
+            transform: translateY(-5px) ;
+
+        }
+
+
+
+        .spot{
+            text-align: center;
+            padding: 10px 20px;
+            border-radius: 20px 15px 15px 20px;
+            background: transparent;
+            border: 1px solid #000;
+            margin-bottom: 2.5px;
+            /*min-width: 5px;*/
+            /*height: 5px;*/
+        }
+
+
+        #layout {
+            position: relative;
+            max-width: 400px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 40px;
+            margin-top: 50px;
+            margin-bottom: 15px;
+            text-align: center;
+            padding: 5px 3px;
+            margin-left: 30%;
+
+        }
+        .reserved{
+            background: #df0000;
+            color:#fff;
+
+        }
+
+        .selected{
+            background: #87ff96;
+        }
+
+        #legend{
+            display: grid;
+            grid-gap: 10px;
+            grid-template-columns: 50px auto;
+
+        }
+
+        #legend .txt{
+            display: flex;
+            align-items: center;
+        }
+
+        #save{
+
+            display: block;
+            margin: 20px auto;
+            font-size: 20px;
+            margin-top: 20px;
+            padding: 10px 20px;
+            border:0;
+            color: #fff;
+            background: #00479f;
+
+        }
+        .exits{
+            display: flex;
+            justify-content: space-around;
+        }
+        .exit {
+            background: transparent;
+            border: 1px solid goldenrod;
+            border-bottom: transparent;
+            width: 5px;
+            height: 7px;
+            color: #ffffff;
+            font-weight: lighter;
+
+        }
+
+        @media only screen and (max-width: 768px) {
+            main {
+                left: 20px;
+            }
+            .timing-wrapper {
+                top: 50px;
+            }
+            .timing-container {
+                top: 20%;
+            }
+            nav {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 40px;
+                flex-grow: 1;
+            }
+        }
+
+        @media only screen and (max-width: 480px) {
+            main {
+                padding: 10px;
+            }
+            .timing-container button {
+                padding: 8px 12px;
+                font-size: 1rem;
+            }
+            nav {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 40px;
+                flex-grow: 1;
+            }
+        }
+
+        p#price{
+            display: none;
+            position: absolute;
+            margin-right: 50px;
+            font-size: 32px;
+            color: black;
+            bottom: 80%;
+            right: 150px;
+        }
+
+        .details {
+            display: flex;
+            flex-direction: column; /* Align form elements vertically */
+            justify-content: center;
+            align-items: center;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            padding: 20px;
+            width: 300px; /* Adjust as needed */
+            height: auto; /* Adjust as needed */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .details label {
+            margin-bottom: 10px;
+        }
+
+        .details input {
+            margin-bottom: 20px;
+        }
+
+
+
+
+
+
+    </style>
+</head>
+<body data-email="<%= session.getAttribute('email') %>">
+<header>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="/bookingspage">Bookings</a></li>
+
+        </ul>
+    </nav>
+</header>
+
+<!--<div class="details" style="margin-top: 50px">-->
+<!--&lt;!&ndash;    <label for="date">Select a date:</label>&ndash;&gt;-->
+<!--&lt;!&ndash;    <input type="date" id="date" required>&ndash;&gt;-->
+
+<!--    <label for="VNum">Enter Vehicle Number:</label>-->
+<!--    <input type="text" name="VehicleNumber" id="VNum">-->
+
+
+<!--    <button type="submit" id="save-info" onclick="">Submit</button>-->
+<!--</div>-->
+
+<div class="timing-wrapper">
+    <div class="timing-container">
+        <!-- time is dynamically generated -->
+    </div>
+</div>
+<main>
+
+    <div id="layout">
+
+
+    </div>
+    <p id="price">Price: £50</p>
+    <div class="exits">
+        <div class="spot exit">Exit</div>
+        <div class="spot exit">Exit</div>
+    </div>
+
+
+    <button id="save" onclick="reserve.save()">Reserve Spot</button>
+
+</main>
+<script>
+
+    function getQueryParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+    }
+    const spots = getQueryParameter('spots');
+
+
+    const reserve = {
+        init: (selectedDate) => {
+            let timingContainer = document.querySelector(".timing-container");
+            let currentTime = new Date();
+            console.log(currentTime);
+            let endTime = 24;
+
+            for (let i = 0; i < endTime; i++) {
+                let hour = i < 10 ? "0" + i : i;
+                let suffix = i < 12 ? "AM" : "PM";
+                let formattedHour = i % 12 || 12; // Convert 0 to 12
+                let button = document.createElement("button");
+
+                button.textContent = formattedHour + ":00 " + suffix;
+
+                let selectedDateTime = new Date(selectedDate);
+                selectedDateTime.setHours(i);
+
+                // Disable past hours
+
+
+                    if (currentTime.getHours() > i || (currentTime.getHours() === i && currentTime.getMinutes() > 0)) {
+                        button.disabled = true;
+                    }
+
+
+                timingContainer.appendChild(button);
+            }
+
+            let layout = document.getElementById("layout");
+
+            // layout elements
+            const num = 0;
+            for (let i = 0; i < 1; i++) {
+                for (let j = 1; j <= spots; j++) {
+                    let spot = document.createElement("div");
+                    spot.innerHTML = num + j;
+                    console.log(num);
+                    spot.className = "spot";
+                    spot.onclick = () => reserve.toggle(spot);
+                    layout.appendChild(spot);
+                }
+            }
+        },
+
+        toggle: spot => {spot.classList.toggle("selected");
+            let price = document.querySelector("main p#price");
+            price.style.display = "block";},
+
+        save: () => {
+            let selected = document.querySelectorAll("#layout .selected");
+
+            if (selected.length == 0) {
+                alert("No seats selected.");
+            } else {
+                let spots = [];
+                for (let s of selected) {
+                    spots.push(s.innerHTML);
+                    price.style.display = "block";
+
+                }
+
+                window.location.href = '/payment';
+            }
+        },
+
+        showLayout: () => {
+            let main = document.querySelector("main");
+            main.style.display = "none";
+
+            // Function transition effect
+            const showWithTransition = () => {
+                main.style.display = "block";
+                setTimeout(() => {
+                    main.style.opacity = "1";
+                }, 1000);
+            };
+
+
+            document.addEventListener("click", () => {
+                setTimeout(() => {
+                    showWithTransition();
+                }, 500); // Delay in milliseconds
+            });
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        let VNo = prompt("Enter Vehicle Number");
+
+        function storeReservationDetails(name, postcode, mailid,Vno) {
+            try {
+                localStorage.setItem('name', name);
+                localStorage.setItem('postcode', postcode);
+                localStorage.setItem('email', mailid);
+                localStorage.setItem('VNum',Vno);
+                console.log("Data stored successfully:", localStorage.getItem('name'), localStorage.getItem("postcode"));
+            } catch (error) {
+                console.error("Error storing data:", error);
+            }
+        }
+
+        const submitButton = document.querySelector("button");
+        const tcontainer = document.querySelector(".timing-container");
+        const details = document.querySelector(".details");
+        const saveInfo = document.querySelector("#save-info")
+        const detail = document.querySelector(".details");
+
+        console.log(VNo)
+        submitButton.addEventListener("click", function() {
+            let name = getQueryParameter('name');
+            let postcode = getQueryParameter('postcode');
+            let mailid;
+            fetch("/getEmail")
+                .then(response => response.text())
+                .then(email => {
+                    mailid = email;
+
+                });
+            storeReservationDetails(name, postcode, mailid,VNo);
+
+        });
+
+        reserve.init(new Date());
+
+        let timingButtons = document.querySelectorAll(".timing-container button");
+        timingButtons.forEach(button => {
+            button.addEventListener("click", () => {
+                reserve.showLayout();
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

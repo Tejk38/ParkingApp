@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Booking Info</title>
+
+
+
+    <style>
+
+        *{
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+
+        body{
+            padding: 0;
+            margin: 0;
+            /*height: 100vh;*/
+            /*width: 100vw;*/
+            background: radial-gradient(circle, #ffd17e, #f5f5f5, #6ed3a6, #6dc8ff, #94b8f5);
+
+        }
+
+        nav{
+            /*height: 100px;*/
+            align-items: center;
+            padding: 0px 15px;
+            background: linear-gradient(#1a1a2e, #16213e, #192a56);
+
+        }
+
+        .navbar{
+            font-size: 26px;
+            /*padding: 10px 25px;*/
+        }
+        .navbar>ul{
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .navbar>ul>li{
+            display: inline-block;
+            margin: 0 15px;
+        }
+
+        .links>ul>li>a{
+            text-decoration: none;
+
+        }
+        .container{
+            margin: 35px;
+
+        }
+
+        .bookings{
+            margin-left: 50px;
+            margin-top: 25px;
+            border: 1px solid red;
+            max-width: 270px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .image-container{
+            display: flex;
+            width: 1040px;
+            justify-content: space-evenly;
+            flex-wrap: wrap;
+
+        }
+
+        .image.items{
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+            width: 300px;
+
+            overflow: hidden;
+            margin:auto;
+        }
+
+        .image.items img{
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .image.items details{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            min-height: 100px;
+        }
+
+
+
+
+    </style>
+</head>
+
+<body>
+<nav class="navbar">
+    <h3>Booking Info</h3>
+
+    <ul>
+        <li><a href="/parking">Home</a></li>
+        <li><a href="/bookingspage">Bookings</a></li>
+    </ul>
+
+</nav>
+
+
+<div class="container">
+    <h3>Bookings:</h3>
+    <div class="image-container">
+        <div th:each="bookingInfo : ${bookingInfoList}" class="image items">
+            <img src="/static/cars-parked.jpg" alt="Parking Lot Image">
+            <div class="details">
+
+                <span class="title" th:text="${bookingInfo.lotName}"></span><br>
+
+                <a class="info" th:href="@{'/directions'}" th:text="${bookingInfo.postcode}"></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    window.onload= function() {
+        let name = localStorage.getItem("name");
+        let postcode = localStorage.getItem("postcode");
+        let email = localStorage.getItem("email");
+        let VNum = localStorage.getItem("VNum");
+        console.log(name+""+postcode+" "+email)
+
+        saveReservationDetails(name, postcode, email,VNum)
+
+
+    }
+
+    function saveReservationDetails(name,postcode,VNum) {
+
+
+        const bookingRequest = {
+            name: name,
+            postcode: postcode,
+            vehicle_number:VNum
+
+        };
+
+        fetch('/bookings/save', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(bookingRequest)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => console.log(data))
+            .catch(error => console.error('There has been a problem with your fetch operation:', error));
+    }
+
+
+
+
+</script>
+
+</body>
+</html>

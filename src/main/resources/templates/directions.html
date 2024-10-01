@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <style>
+        body{
+            background: radial-gradient(circle, #ffefba, #ffffff, #b9f6ca, #a3f1ff, #bedcfa);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #map{
+            width: 800px;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+
+<script>
+    // Initialize the map
+    var map = L.map('map').setView([51.505, -0.09], 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+
+    var postcode1 = prompt('enter your location');
+    var postcode2 = 'le1 7rh';
+    console.log(postcode1+" "+postcode2)
+
+
+    // Function to get latitude and longitude from postcode
+    function getLatLong(postcode) {
+        return fetch('https://api.postcodes.io/postcodes/' + postcode)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 200) {
+                    return data.result;
+                } else {
+                    throw new Error(data.error);
+                }
+            });
+    }
+
+    // Use the function to get latitude and longitude for each postcode
+    Promise.all([getLatLong(postcode1), getLatLong(postcode2)])
+        .then(([result1, result2]) => {
+            // Initialize the routing control and add it to the map.
+            L.Routing.control({
+                waypoints: [
+                    L.latLng(result1.latitude, result1.longitude),  // Starting point
+                    L.latLng(result2.latitude, result2.longitude)  // Destination
+                ],
+                routeWhileDragging: true
+            }).addTo(map);
+        })
+        .catch(error => console.error('Error:', error));
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stylish Webpage</title>
+<!--    leaflet libraries-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+<!--    Bootstrap-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+
+
+    <style>
+        html{
+            height: 100%;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            height: 100%;
+            color: red;
+
+            overflow-x: hidden;
+            background: url("/static/parkingbg.jpg");
+
+
+            background-size: cover;
+
+
+
+        }
+
+
+        .nav {
+            justify-content: flex-end;
+        }
+        .navbar{
+            height: 60px;
+            margin-bottom: 10px;
+            background: linear-gradient(#1a1a2e, #16213e, #192a56);
+            color: gold;
+
+
+            font-size: 16px;
+
+
+        }
+
+        .dropdown-options {
+            display: none;
+            position: absolute;
+            width: 120px;
+            overflow: hidden;
+            background-color:#fff;
+            border-radius:5px;
+            box-shadow: 0px 10px 10px 0px rgba(0,0,0,0.4);
+            right: 0;
+            text-align: center;
+            list-style: none;
+
+        }
+
+        .profile:hover .dropdown-options {
+            display: block;
+
+        }
+
+        .dropdown-options a {
+            display: block;
+            color: #000000;
+            text-decoration: none;
+            /*padding: 10px;*/
+        }
+
+        .dropdown-options a:hover {
+            color: #0a0a23;
+            background-color: #ddd;
+            border-radius:5px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 7px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 10px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: white; /* Change color on hover */
+            color: black;
+        }
+        a{
+            text-decoration: none;
+        }
+
+
+
+        #map{
+            position: relative;
+            left: 20%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 800px;
+            height: 300px;
+            border: 1px solid black;
+            border-radius: 20px;
+
+        }
+
+
+        .image-container {
+
+            position: relative;
+            left: 15%;
+            right: 20%;
+            /*margin: 0 auto;*/
+            margin-top: 20px;
+            max-width: 900px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 10px;
+        }
+
+        .image.items {
+            width: 300px;
+            border-radius: 10px;
+            height: 250px;
+            margin-right: 10px;
+            margin-left: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: azure;
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .image.items:before {
+            content: '';
+            background: linear-gradient(
+                    to bottom,
+                    rgba(0,0,0,0) 0%,
+                    rgba(0,0,0,0.7) 100%
+            );
+            width: 100%;
+            height: 50%;
+            opacity: 0;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            z-index: 2;
+            transition-property: top, opacity;
+            transition-duration: 0.3s;
+        }
+
+        .image.items img {
+            display: block;
+            max-width: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .image.items .details {
+            font-size: 16px;
+            padding: 20px;
+            color: #fff;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            z-index: 3;
+        }
+
+        .image.items .details span {
+            display: block;
+            opacity: 0;
+            position: relative;
+            top: 100px;
+            transition-property: top, opacity;
+            transition-duration: 0.3s;
+            transition-delay: 0s;
+        }
+
+        .image.items .details .title {
+            line-height: 1;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .image.items .details .info {
+            line-height: 1.2;
+            margin-top: 5px;
+            font-size: 12px;
+        }
+
+        .image.items:focus,
+        .image.items:hover {
+            transform: translateY(-5px); /* Add translation on hover */
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Add box shadow on hover */
+        }
+
+        .image.items:focus:before,
+        .image.items:hover:before {
+            opacity: 1;
+            top: 50%;
+        }
+
+        .image.items:focus .details span,
+        .image.items:hover .details span {
+            opacity: 1;
+            top: 0;
+        }
+
+        .image.items:focus .details .title,
+        .image.items:hover .details .title {
+            transition-delay: 0.15s;
+        }
+
+        .image.items:focus .details .info,
+        .image.items:hover .details .info {
+            transition-delay: 0.25s;
+        }
+
+
+
+
+        @media only screen and (max-width: 768px) {
+            #map {
+                left: 10%;
+                width: 80%;
+            }
+        }
+
+        @media only screen and (max-width: 480px) {
+            header {
+                padding: 10px;
+            }
+
+            nav li {
+                font-size: 16px;
+            }
+
+            .profile img {
+                width: 40px;
+            }
+
+            .image-container {
+                margin: 0 10px;
+                margin-top: 250px;
+            }
+
+            .image.items img {
+                min-width: 100%;
+            }
+        }
+
+        @media only screen and (max-width: 768px) {
+            .image-container {
+                left: 0;
+                width: 100%;
+            }
+        }
+        @media only screen and (max-width: 768px) {
+            #map {
+                width: 100%;
+                left: 0;
+            }
+        }
+
+
+    </style>
+
+</head>
+<body>
+<!--<header>-->
+<!--    <h1>Parking Lots</h1>-->
+<!--    <nav>-->
+<!--        <ul>-->
+<!--            <li><a href="/parking">Home</a></li>-->
+<!--            <li><a href="/bookings">My Bookings</a></li>-->
+<!--            <li class="profile">-->
+<!--                <a href="#"><i class="fa-user fa-regular"></i></a>-->
+<!--                <ul class="dropdown-options">-->
+<!--                    <li><a href="#">Profile</a></li>-->
+<!--                    <li><a href="/logout">Logout</a></li>-->
+<!--                </ul>-->
+<!--            </li>-->
+<!--        </ul>-->
+<!--    </nav>-->
+
+<!--</header>-->
+<nav class="navbar navbar-expand-lg navbar-light bg-light ">
+    <div class="container-fluid">
+        <h2></h2>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="nav ms-auto fs-5">
+                                <li class="nav-item m-3">
+                                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                                </li>
+                <li class="nav-item m-3">
+                    <a class="nav-link" href="/bookings">Bookings</a>
+                </li>
+                <li class="nav-item profile my-auto m-3">
+                    <a href="#"><i class="fa-user fa-regular"></i></a>
+                    <ul class="dropdown-options">
+
+                        <li><a href="/logout">Logout</a></li>
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+<div id="map">
+
+    <h3>Map</h3>
+
+</div>
+
+
+<div class="container">
+
+    <div class="image-container">
+        <!--        dynamically generated from script-->
+    </div>
+</div>
+
+<script>
+    var map = L.map('map').setView([52.6386,-1.13169], 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    let postcode;
+    function getLatLong(postcode) {
+        console.log(postcode);
+        return fetch('https://api.postcodes.io/postcodes/' + postcode)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 200) {
+                    return {latitude: data.result.latitude, longitude: data.result.longitude};
+
+                } else {
+                    throw new Error(data.error);
+                }
+            });
+    }
+
+
+
+    function fetchParkingLotData() {
+
+
+        fetch('/parkingLots')
+            .then(response => response.json())
+            .then(data => {
+                // Check if data is an array
+                if (Array.isArray(data)) {
+                    const container = document.querySelector(".image-container");
+
+
+                    data.forEach(parkingLot => {
+                        const name = parkingLot.spotName;
+                        postcode = parkingLot.postCode;
+                        const spots = parkingLot.spots;
+
+                        getLatLong(postcode)
+                            .then(result => {
+                                // Create marker and bind popup
+                                var marker = L.marker([result.latitude, result.longitude]).addTo(map);
+                                marker.bindPopup(name); // Bind a popup with the name of the location to each marker.
+                            })
+                            .catch(error => console.error('Error getting latitude and longitude:', error));
+
+
+                        const item = document.createElement("div");
+                        item.classList.add("image", "items");
+                        item.innerHTML = `
+                        <a href="/SpotReserve?name=${name}&postcode=${postcode}&spots=${spots}">
+                            <img src="/static/cars-parked.jpg" alt="Parking Lot Image">
+                        </a>
+                        <div class="details">
+                            <span class="title" style="text-align: center; font-size: 32px;">${name}</span>
+                            <span class="info" style="text-align: center;">${postcode}</span>
+                            <span class="spots" style="opacity: 0">${spots}</span>
+                        </div>
+                    `;
+
+                        container.appendChild(item);
+                    });
+                } else {
+                    console.error('Invalid data format: Expected an array');
+                }
+            })
+            .catch(error => console.error('Error fetching parking lot data:', error));
+    }
+
+    window.onload = fetchParkingLotData;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+</body>
+</html>

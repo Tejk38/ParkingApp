@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Owner</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <style>
+        body{
+            /*background: radial-gradient(circle, #ffd17e, #f5f5f5, #6ed3a6, #6dc8ff, #94b8f5);*/
+
+        }
+
+        .nav {
+            justify-content: flex-end;
+            height: 200px;
+
+        }
+        .navbar{
+            background: linear-gradient(#1a1a2e, #16213e, #192a56);
+            height: 65px;
+
+        }
+        .dropdown-options {
+            display: none;
+            position: absolute;
+            width: 120px;
+            overflow: hidden;
+            background-color:#fff;
+            border-radius:5px;
+            box-shadow: 0px 10px 10px 0px rgba(0,0,0,0.4);
+            right: 0;
+            text-align: center;
+            list-style: none;
+
+        }
+
+        .profile:hover .dropdown-options {
+            display: block;
+
+        }
+
+        .dropdown-options a {
+            display: block;
+            color: #000000;
+            text-decoration: none;
+            /*padding: 10px;*/
+        }
+
+        .dropdown-options a:hover {
+            color: #0a0a23;
+            background-color: #ddd;
+            border-radius:5px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 7px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 10px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: white; /* Change color on hover */
+            color: black;
+        }
+        a{
+            text-decoration: none;
+        }
+
+        .image.items{
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+            width: 300px;
+            overflow: hidden;
+            margin:auto;
+        }
+
+        .image.items img{
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .image.items details{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            min-height: 100px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <h2 style="color: red">Parking Owner</h2>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="nav ms-auto fs-3">
+
+                <li class="nav-item m-3">
+                    <a class="nav-link" href="#">Listings</a>
+                </li>
+                <li class="nav-item profile my-auto m-3">
+                    <a href="#"><i class="fa-user fa-regular"></i></a>
+                    <ul class="dropdown-options">
+                        <li><a href="/newParking">add</a></li>
+                        <li><a href="/logout">Logout</a></li>
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+<input type="button" class="btn" value="Add ParkingLot" th:href="@{'/newParking'}">
+
+<div class="Lot-container">
+
+
+
+
+</div>
+
+
+
+
+<script>
+
+    window.onload = async function() {
+        let email = await fetch("/getEmail")
+            .then(response => response.text())
+            .catch(error => {
+                console.error('Error fetching email:', error);
+                return null; // Handle error by setting email to null
+            });
+
+        // Check if email is available
+        if (email) {
+            fetchBookingInfoData(email); // Pass the email to fetchBookingInfoData function
+        } else {
+            console.error('Email fetch operation failed.');
+        }
+    }
+
+    function fetchBookingInfoData(email) {
+        fetch('/parkingLots/owner?email=' + email)
+            .then(response => response.json())
+
+            .then(data => {
+                console.log(data);
+                if (Array.isArray(data) && data.length > 0) {
+                    const container = document.querySelector(".Lot-container");
+
+                    data.forEach(parkingLot => {
+                        const name = parkingLot.spotName;
+                        const postcode = parkingLot.postCode;
+                        const address = parkingLot.address;
+                        const id = parkingLot.id;
+                        console.log(id);
+
+                        const item = document.createElement("div");
+                        item.classList.add("image", "items");
+                        item.innerHTML = `
+                        <img src="/static/cars-parked.jpg" alt="Parking Lot Image">
+                        <div class="details">
+                            <span class="title" style="text-align: center; font-size: 32px;">${name}</span>
+                            <a href="/deleteLot?id=${id}"> <svg style="float: right; margin-top: 15px; margin-right: 15px" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+  <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+</svg></a><br/>
+                            <span class="title" style="text-align: center; font-size: 32px;">${address}</span><br>
+                            <span class="info" style="text-align: center;">${postcode}</span>
+                        </div>
+                    `;
+                        // Append the item to display it
+                        container.appendChild(item);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching parking lots:', error);
+            });
+    }
+
+
+
+
+
+
+
+</script>
+</body>
+</html>
